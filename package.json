@@ -1,0 +1,30 @@
+{
+  "name": "online-job-portal-and-recruitment-system",
+  "version": "1.0.0",
+  "description": "This is a Online Job Portal and Recruitment System Website in MERN Stack.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "job",
+    "portal",
+    "online",
+    "jobs",
+    "protal",
+    "recruitment",
+    "system",
+    "jobs",
+    "for",
+    "recruitment",
+    "react",
+    "js",
+    "node",
+    "js",
+    "express",
+    "js",
+    "mongodb"
+  ],
+  "author": "Ali Hassan",
+  "license": "ISC"
+}
