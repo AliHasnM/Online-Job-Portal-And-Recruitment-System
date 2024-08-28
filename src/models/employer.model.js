@@ -8,6 +8,8 @@ const employerSchema = new Schema(
     companyName: {
       type: String,
       required: true,
+      unique: true,
+      lowercase: true,
       trim: true,
       index: true,
     },
