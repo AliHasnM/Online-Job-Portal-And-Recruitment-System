@@ -3,16 +3,47 @@ import { JobPosting } from "../models/jobPosting.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-// Controller to Search Jobs (Complete)
+// Controller to Search Jobs with Filters
 const searchJobs = asyncHandler(async (req, res) => {
-  const searchCriteria = req.query; // Assume search criteria come from query params
+  const { title, location, company, minSalary, maxSalary, jobType } = req.query;
 
-  const jobs = await JobPosting.find({ ...searchCriteria });
+  // Build the search criteria dynamically based on query parameters
+  let searchCriteria = {};
+
+  if (title) {
+    searchCriteria.title = { $regex: title, $options: "i" }; // Case-insensitive search
+  }
+  if (location) {
+    searchCriteria.location = { $regex: location, $options: "i" }; // Case-insensitive search
+  }
+  if (company) {
+    searchCriteria.company = { $regex: company, $options: "i" }; // Case-insensitive search
+  }
+  if (minSalary || maxSalary) {
+    searchCriteria.salary = {};
+    if (minSalary) searchCriteria.salary.$gte = minSalary;
+    if (maxSalary) searchCriteria.salary.$lte = maxSalary;
+  }
+  if (jobType) {
+    searchCriteria.jobType = jobType;
+  }
+
+  const jobs = await JobPosting.find(searchCriteria);
 
   return res
     .status(200)
     .json(new ApiResponse(200, jobs, "Jobs retrieved successfully"));
 });
+
+// const searchJobs = asyncHandler(async (req, res) => {
+//   const searchCriteria = req.query; // Assume search criteria come from query params
+
+//   const jobs = await JobPosting.find({ ...searchCriteria });
+
+//   return res
+//     .status(200)
+//     .json(new ApiResponse(200, jobs, "Jobs retrieved successfully"));
+// });
 
 // Controller to Get Job Details (Complete)
 const getJobDetails = asyncHandler(async (req, res) => {
