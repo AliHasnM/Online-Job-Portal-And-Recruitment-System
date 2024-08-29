@@ -21,7 +21,7 @@ const employerSchema = new Schema(
       trim: true,
     },
     companyProfile: {
-      type: String, // cloudinary url
+      type: String, // Cloudinary URL or any image URL
       required: true,
     },
     jobPostings: [
