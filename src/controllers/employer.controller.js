@@ -288,35 +288,6 @@ const updateJobSeekerStatus = asyncHandler(async (req, res) => {
     );
 });
 
-// Controller to post a new job
-const postJob = asyncHandler(async (req, res) => {
-  const { title, description, requirements, location, salary } = req.body;
-  const employerId = req.user._id; // Assuming req.user is populated by the auth middleware
-
-  if (!(title || description || requirements || location || salary)) {
-    throw new ApiError(400, "All fields are required");
-  }
-
-  // Create a new job posting
-  const jobPosting = await JobPosting.create({
-    title,
-    description,
-    requirements,
-    location,
-    salary,
-    employer: employerId,
-  });
-
-  // Add the job posting to the employer's list
-  await Employer.findByIdAndUpdate(employerId, {
-    $push: { jobPostings: jobPosting._id },
-  });
-
-  return res
-    .status(201)
-    .json(new ApiResponse(201, jobPosting, "Job posted successfully"));
-});
-
 // Controller to Refresh Access Token (Complete)
 const refreshAccessToken = asyncHandler(async (req, res) => {
   // Get the refresh token from cookies or request body
@@ -411,7 +382,6 @@ export {
   getApplications,
   updateJobSeekerStatus,
   getJobSeekerDetails,
-  postJob,
   refreshAccessToken,
   changeCurrentPassword,
 };

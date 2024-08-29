@@ -9,6 +9,7 @@ import {
   deleteJobPosting,
 } from "../controllers/jobPosting.controller.js";
 import { verifyEmployerJWT } from "../middlewares/auth.middleware.js";
+// import { verifyEmployerJWT } from "../middlewares/employer.middleware.js";
 
 const router = Router();
 

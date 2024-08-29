@@ -26,9 +26,30 @@ const jobSeekerSchema = new Schema(
       type: [String], // Array of skills
       required: true,
     },
-    experience: {
-      type: String, // Description of experience
-    },
+    experience: [
+      {
+        company: {
+          type: String,
+          required: true,
+        },
+        position: {
+          type: String,
+          required: true,
+        },
+        startDate: {
+          type: Date,
+          required: true,
+        },
+        endDate: {
+          type: Date,
+          required: false,
+        },
+        description: {
+          type: String,
+          required: false,
+        },
+      },
+    ],
     password: {
       type: String,
       required: [true, "Password is required"],

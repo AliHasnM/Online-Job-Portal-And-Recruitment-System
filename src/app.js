@@ -20,10 +20,13 @@ app.use(cookieParser());
 import employerRouter from "./routes/employer.routes.js";
 import JobPostingRouter from "./routes/jobPosting.routes.js";
 import jobSeekerRouter from "./routes/jobSeeker.routes.js";
+import applicationRouter from "./routes/application.routes.js";
 
 app.use("/api/v1/employers", employerRouter);
 app.use("/api/v1/jobposting", JobPostingRouter);
 app.use("/api/v1/jobseekers", jobSeekerRouter);
+app.use("/api/v1/applications", applicationRouter);
+
 // http://localhost:8000/api/v1/users${differentRoutes}
 
 export { app };

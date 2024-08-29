@@ -10,11 +10,11 @@ import {
   getApplications,
   getJobSeekerDetails,
   updateJobSeekerStatus,
-  postJob,
   refreshAccessToken,
   changeCurrentPassword,
 } from "../controllers/employer.controller.js";
 import { verifyEmployerJWT } from "../middlewares/auth.middleware.js";
+// import { verifyEmployerJWT } from "../middlewares/employer.middleware.js";
 
 const router = Router();
 
@@ -32,8 +32,6 @@ router
   .route("/profile")
   .get(getEmployerProfile) // Get employer profile
   .patch(updateEmployerProfile); // Update employer profile
-
-router.post("/post-job", postJob); // Route for posting a job
 
 // Routes for managing job seeker applications
 router.get("/applications/:jobPostingId", getApplications); // Get applications for a specific job posting
