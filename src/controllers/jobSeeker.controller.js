@@ -214,75 +214,6 @@ const getJobSeekerProfile = asyncHandler(async (req, res) => {
     );
 });
 
-// Controller to Search Jobs
-const searchJobs = asyncHandler(async (req, res) => {
-  // Implement job search logic here
-  // Example:
-  // const jobs = await JobPosting.find({ ...searchCriteria });
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, {}, "Job search functionality not implemented yet"),
-    );
-});
-
-// Controller to Get Job Details
-const getJobDetails = asyncHandler(async (req, res) => {
-  const { jobPostingId } = req.params;
-
-  // Implement job details retrieval logic here
-  // Example:
-  // const job = await JobPosting.findById(jobPostingId);
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, {}, "Job details functionality not implemented yet"),
-    );
-});
-
-// Controller to Apply for a Job
-const applyForJob = asyncHandler(async (req, res) => {
-  const { jobPostingId } = req.params;
-  const jobSeekerId = req.jobSeeker._id;
-
-  // Implement job application logic here
-  // Example:
-  // const jobPosting = await JobPosting.findById(jobPostingId);
-  // jobPosting.applications.push(jobSeekerId);
-  // await jobPosting.save();
-
-  return res
-    .status(201)
-    .json(
-      new ApiResponse(
-        201,
-        {},
-        "Job application functionality not implemented yet",
-      ),
-    );
-});
-
-// Controller to Get Application Status
-const getApplicationStatus = asyncHandler(async (req, res) => {
-  const { jobPostingId } = req.params;
-  const jobSeekerId = req.jobSeeker._id;
-
-  // Implement application status retrieval logic here
-  // Example:
-  // const jobPosting = await JobPosting.findById(jobPostingId).populate('applications');
-  // const application = jobPosting.applications.find(app => app._id.toString() === jobSeekerId.toString());
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        {},
-        "Application status functionality not implemented yet",
-      ),
-    );
-});
-
 // Controller to Refresh Access Token (Complete)
 const refreshAccessToken = asyncHandler(async (req, res) => {
   // Get the refresh token from cookies or request body
@@ -384,10 +315,6 @@ export {
   logoutJobSeeker,
   updateJobSeekerProfile,
   getJobSeekerProfile,
-  searchJobs,
-  getJobDetails,
-  applyForJob,
-  getApplicationStatus,
   refreshAccessToken,
   changeCurrentPassword,
 };

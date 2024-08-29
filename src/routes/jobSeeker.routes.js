@@ -4,10 +4,6 @@ import {
   loginJobSeeker,
   getJobSeekerProfile,
   updateJobSeekerProfile,
-  searchJobs,
-  getJobDetails,
-  applyForJob,
-  getApplicationStatus,
   logoutJobSeeker,
   refreshAccessToken,
   changeCurrentPassword,
@@ -33,12 +29,6 @@ router
   .route("/profile")
   .get(getJobSeekerProfile) // Get job seeker profile
   .patch(upload.single("resume"), updateJobSeekerProfile); // Update job seeker profile
-
-// Job search and application routes
-router.route("/jobs").get(searchJobs);
-router.route("/jobs/:jobPostingId").get(getJobDetails);
-router.route("/jobs/:jobPostingId/apply").post(applyForJob);
-router.route("/jobs/:jobPostingId/status").get(getApplicationStatus);
 
 router.route("/refresh-token").post(refreshAccessToken);
 router
