@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 // Function to generate access and refresh tokens for a user (Complete)
 const generateAccessAndRefreshTokens = async (employerId) => {
@@ -40,16 +40,14 @@ const generateAccessAndRefreshTokens = async (employerId) => {
 
 // Controller to register a new employer (Complete)
 const registerEmployer = asyncHandler(async (req, res) => {
-  const { companyName, email, password, companyProfile } = req.body;
+  const { companyName, email, password } = req.body;
 
-  if (
-    [companyName, email, password, companyProfile].some(
-      (field) => !field?.trim(),
-    )
-  ) {
+  // Validate that all required fields are provided
+  if ([companyName, email, password].some((field) => !field?.trim())) {
     throw new ApiError(400, "All fields are required");
   }
 
+  // Check if an employer with the same companyName or email already exists
   const existingEmployer = await Employer.findOne({
     $or: [{ companyName }, { email }],
   });
@@ -58,11 +56,27 @@ const registerEmployer = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Employer already exists");
   }
 
+  let companyProfileUrl;
+
+  if (req.file) {
+    try {
+      // Upload company profile image to Cloudinary
+      const result = await uploadOnCloudinary(req.file.path);
+      // Set companyProfile URL from Cloudinary response
+      companyProfileUrl = result?.secure_url;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error); // Log the actual error
+      throw new ApiError(500, "Failed to upload company profile to Cloudinary");
+    }
+  } else {
+    throw new ApiError(400, "Company profile image is required");
+  }
+
   const employer = await Employer.create({
     companyName,
     email,
     password,
-    companyProfile,
+    companyProfile: companyProfileUrl,
   });
 
   const createdEmployer = await Employer.findById(employer._id).select(
@@ -70,7 +84,10 @@ const registerEmployer = asyncHandler(async (req, res) => {
   );
 
   if (!createdEmployer) {
-    throw new ApiError(500, "Something went wrong while registering the user");
+    throw new ApiError(
+      500,
+      "Something went wrong while registering the employer",
+    );
   }
 
   return res
@@ -157,31 +174,39 @@ const logoutEmployer = asyncHandler(async (req, res) => {
 
 // Controller to Update Employer Profile (Complete)
 const updateEmployerProfile = asyncHandler(async (req, res) => {
-  const { companyName, companyProfile, email } = req.body;
+  const { companyName, email } = req.body;
+  let companyProfile = req.employer.companyProfile;
 
-  // If fullName or email is missing, throw an error
   if (!companyName || !email) {
-    throw new ApiError(400, "All fileds are required");
+    throw new ApiError(400, "Company Name and Email are required");
   }
 
-  // Find the user by their ID and update their details
+  // Check if the company profile image file is provided
+  if (req.file) {
+    try {
+      // Upload company profile image to Cloudinary
+      const result = await uploadOnCloudinary(req.file.path);
+      // Update companyProfile URL from Cloudinary response
+      companyProfile = result?.secure_url;
+    } catch (error) {
+      throw new ApiError(500, "Failed to upload company profile to Cloudinary");
+    }
+  }
+
+  // Update employer data with new profile information and uploaded companyProfile URL
   const employer = await Employer.findByIdAndUpdate(
-    req.employer?._id,
+    req.employer._id,
     {
-      $set: {
-        companyName: companyName,
-        companyProfile: companyProfile,
-        email: email,
-      },
+      $set: { companyName, email, companyProfile },
     },
     { new: true },
   ).select("-password");
 
-  // Return a success response with the updated user details
+  // Return a success response with the updated employer data
   return res
     .status(200)
     .json(
-      new ApiResponse(200, employer, "Employer Profile Update Successfully"),
+      new ApiResponse(200, employer, "Employer Profile Updated Successfully"),
     );
 });
 

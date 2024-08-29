@@ -14,13 +14,15 @@ import {
   changeCurrentPassword,
 } from "../controllers/employer.controller.js";
 import { verifyEmployerJWT } from "../middlewares/auth.middleware.js";
-// import { verifyEmployerJWT } from "../middlewares/employer.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
 
-// Routes for employers
-router.route("/register").post(registerEmployer);
-// router.post("/register", registerEmployer); // Register a new employer
+// Register route with single file upload middleware for company profile
+router
+  .route("/register")
+  .post(upload.single("companyProfile"), registerEmployer);
+
 router.route("/login").post(loginEmployer);
 router.route("/refresh-token").post(refreshAccessToken);
 router.route("/change-password").post(verifyEmployerJWT, changeCurrentPassword);
@@ -31,7 +33,7 @@ router.use(verifyEmployerJWT);
 router
   .route("/profile")
   .get(getEmployerProfile) // Get employer profile
-  .patch(updateEmployerProfile); // Update employer profile
+  .patch(upload.single("companyProfile"), updateEmployerProfile); // Update employer profile
 
 // Routes for managing job seeker applications
 router.get("/applications/:jobPostingId", getApplications); // Get applications for a specific job posting
