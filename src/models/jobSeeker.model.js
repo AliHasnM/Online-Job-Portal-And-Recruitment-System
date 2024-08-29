@@ -101,5 +101,5 @@ jobSeekerSchema.methods.generateRefreshToken = function () {
   );
 };
 
-// Exporting the Job Seeker model
+// Export the Job Seeker model
 export const JobSeeker = mongoose.model("JobSeeker", jobSeekerSchema);

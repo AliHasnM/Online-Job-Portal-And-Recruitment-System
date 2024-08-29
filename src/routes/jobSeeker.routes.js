@@ -9,7 +9,6 @@ import {
   changeCurrentPassword,
 } from "../controllers/jobSeeker.controller.js";
 import { verifyJobSeekerJWT } from "../middlewares/auth.middleware.js";
-// import { verifyJobSeekerJWT } from "../middlewares/jobSeeker.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
