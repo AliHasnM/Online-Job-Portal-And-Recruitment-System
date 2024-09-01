@@ -1,22 +1,42 @@
+import http from "http";
+import app from "./app.js"; // Import your Express app
+import { Server } from "socket.io";
 import dotenv from "dotenv";
-import { app } from "./app.js";
-import connectDB from "./db/index.js";
+import connectDB from "./db/index.js"; // Database connection
 
-dotenv.config({
-  path: "./.env",
+dotenv.config({ path: "./.env" });
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CORS_ORIGIN,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+// Pass `io` to `app.js`
+app.set("io", io);
+
+// Socket.IO setup
+io.on("connection", (socket) => {
+  console.log("A user connected");
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+
+  socket.on("sendNotification", (notification) => {
+    io.emit("notification", notification);
+  });
 });
 
 connectDB()
   .then(() => {
-    app.on("error", (error) => {
-      console.log("ERRR:", error);
-      throw error;
-    });
-    app.listen(process.env.PORT || 8000, () => {
-      console.log(`Server is running at PORT : ${process.env.PORT}`);
+    server.listen(process.env.PORT || 8000, () => {
+      console.log(`Server is running at PORT: ${process.env.PORT || 8000}`);
     });
   })
   .catch((err) => {
-    // Log an error message if the database connection fails
     console.log("MongoDB Connection Failed !!!", err);
   });
