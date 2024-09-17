@@ -9,12 +9,13 @@ import notificationRouter from "./routes/notification.routes.js";
 
 const app = express();
 
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true,
-  }),
-);
+// Use environment variable for CORS origin if available
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
@@ -24,7 +25,6 @@ app.use(cookieParser());
 // Middleware to attach `io` to each request
 app.use((req, res, next) => {
   const io = app.get("io"); // Retrieve `io` from `app`
-  // console.log("Middleware: Attaching io to request"); // Debugging log
   req.io = io;
   next();
 });

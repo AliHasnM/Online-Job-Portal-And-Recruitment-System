@@ -1,3 +1,5 @@
+// routes/jobSeeker.routes.js
+
 import { Router } from "express";
 import {
   registerJobSeeker,
@@ -30,11 +32,8 @@ router
   .patch(upload.single("resume"), updateJobSeekerProfile); // Update job seeker profile
 
 router.route("/refresh-token").post(refreshAccessToken);
-router
-  .route("/change-password")
-  .post(verifyJobSeekerJWT, changeCurrentPassword);
+router.route("/change-password").post(changeCurrentPassword);
 
-// Logout route
 router.route("/logout").post(logoutJobSeeker);
 
 export default router;

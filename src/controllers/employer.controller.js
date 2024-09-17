@@ -39,57 +39,101 @@ const generateAccessAndRefreshTokens = async (employerId) => {
 };
 
 // Controller to register a new employer (Complete)
+// const registerEmployer = asyncHandler(async (req, res) => {
+//   const { companyName, email, password } = req.body;
+
+//   // Validate that all required fields are provided
+//   if ([companyName, email, password].some((field) => !field?.trim())) {
+//     throw new ApiError(400, "All fields are required");
+//   }
+
+//   // Check if an employer with the same companyName or email already exists
+//   const existingEmployer = await Employer.findOne({
+//     $or: [{ companyName }, { email }],
+//   });
+
+//   if (existingEmployer) {
+//     throw new ApiError(400, "Employer already exists");
+//   }
+
+//   let companyProfileUrl;
+
+//   if (req.file) {
+//     try {
+//       // Upload company profile image to Cloudinary
+//       const result = await uploadOnCloudinary(req.file.path);
+//       // Set companyProfile URL from Cloudinary response
+//       companyProfileUrl = result?.secure_url;
+//     } catch (error) {
+//       console.error("Cloudinary upload error:", error); // Log the actual error
+//       throw new ApiError(500, "Failed to upload company profile to Cloudinary");
+//     }
+//   } else {
+//     throw new ApiError(400, "Company profile image is required");
+//   }
+
+//   const employer = await Employer.create({
+//     companyName,
+//     email,
+//     password,
+//     companyProfile: companyProfileUrl,
+//   });
+
+//   const createdEmployer = await Employer.findById(employer._id).select(
+//     "-password -refreshToken",
+//   );
+
+//   if (!createdEmployer) {
+//     throw new ApiError(
+//       500,
+//       "Something went wrong while registering the employer",
+//     );
+//   }
+
+//   return res
+//     .status(201)
+//     .json(
+//       new ApiResponse(201, createdEmployer, "Employer registered successfully"),
+//     );
+// });
 const registerEmployer = asyncHandler(async (req, res) => {
   const { companyName, email, password } = req.body;
-
-  // Validate that all required fields are provided
   if ([companyName, email, password].some((field) => !field?.trim())) {
     throw new ApiError(400, "All fields are required");
   }
-
-  // Check if an employer with the same companyName or email already exists
   const existingEmployer = await Employer.findOne({
     $or: [{ companyName }, { email }],
   });
-
   if (existingEmployer) {
     throw new ApiError(400, "Employer already exists");
   }
-
   let companyProfileUrl;
-
   if (req.file) {
     try {
-      // Upload company profile image to Cloudinary
       const result = await uploadOnCloudinary(req.file.path);
-      // Set companyProfile URL from Cloudinary response
       companyProfileUrl = result?.secure_url;
     } catch (error) {
-      console.error("Cloudinary upload error:", error); // Log the actual error
+      console.error("Cloudinary upload error:", error);
       throw new ApiError(500, "Failed to upload company profile to Cloudinary");
     }
   } else {
     throw new ApiError(400, "Company profile image is required");
   }
-
   const employer = await Employer.create({
     companyName,
     email,
     password,
     companyProfile: companyProfileUrl,
   });
-
   const createdEmployer = await Employer.findById(employer._id).select(
     "-password -refreshToken",
   );
-
   if (!createdEmployer) {
     throw new ApiError(
       500,
       "Something went wrong while registering the employer",
     );
   }
-
   return res
     .status(201)
     .json(
@@ -98,44 +142,78 @@ const registerEmployer = asyncHandler(async (req, res) => {
 });
 
 // Controller to login an employer (Complete)
+// const loginEmployer = asyncHandler(async (req, res) => {
+//   const { companyName, email, password } = req.body;
+
+//   if (!(companyName || email)) {
+//     throw new ApiError(400, "companyName or email is required");
+//   }
+
+//   // Find user by companyName or email
+//   const employer = await Employer.findOne({
+//     $or: [{ companyName }, { email }],
+//   });
+
+//   if (!employer) {
+//     throw new ApiError(404, "Employer does not exist");
+//   }
+
+//   const isPasswordValid = await employer.isPasswordCorrect(password);
+
+//   // If password is incorrect, throw an error
+//   if (!isPasswordValid) {
+//     throw new ApiError(401, "Invalid employer credentials");
+//   }
+
+//   // Generate access and refresh tokens
+//   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+//     employer._id,
+//   );
+
+//   const loggedInEmployer = await Employer.findById(employer._id).select(
+//     "-password -refreshToken",
+//   );
+
+//   // Options for the cookies
+//   const options = {
+//     httpOnly: true,
+//     secure: true,
+//   };
+
+//   return res
+//     .status(200)
+//     .cookie("accessToken", accessToken, options)
+//     .cookie("refreshToken", refreshToken, options)
+//     .json(
+//       new ApiResponse(
+//         200,
+//         { employer: loggedInEmployer, accessToken, refreshToken },
+//         "Employer logged In Successfully",
+//       ),
+//     );
+// });
 const loginEmployer = asyncHandler(async (req, res) => {
   const { companyName, email, password } = req.body;
-
   if (!(companyName || email)) {
     throw new ApiError(400, "companyName or email is required");
   }
-
-  // Find user by companyName or email
   const employer = await Employer.findOne({
     $or: [{ companyName }, { email }],
   });
-
   if (!employer) {
     throw new ApiError(404, "Employer does not exist");
   }
-
   const isPasswordValid = await employer.isPasswordCorrect(password);
-
-  // If password is incorrect, throw an error
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid employer credentials");
   }
-
-  // Generate access and refresh tokens
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
     employer._id,
   );
-
   const loggedInEmployer = await Employer.findById(employer._id).select(
     "-password -refreshToken",
   );
-
-  // Options for the cookies
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
+  const options = { httpOnly: true, secure: true };
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -270,12 +348,53 @@ const getJobSeekerDetails = asyncHandler(async (req, res) => {
     );
 });
 
-// Controller to update job seeker status for a job posting
+// Controller to update job seeker status for a job posting (Complete)
+// const updateJobSeekerStatus = asyncHandler(async (req, res) => {
+//   const { jobPostingId, jobSeekerId } = req.params;
+//   const { status } = req.body; // e.g., "Accepted", "Rejected"
+
+//   // Find the job posting and populate applications
+//   const employer = await Employer.findOne({
+//     jobPostings: jobPostingId,
+//   }).populate({
+//     path: "jobPostings",
+//     match: { _id: jobPostingId },
+//     populate: { path: "applications", model: "JobSeeker" },
+//   });
+
+//   if (!employer) {
+//     throw new ApiError(404, "Job posting not found");
+//   }
+
+//   const jobPosting = employer.jobPostings[0];
+//   const jobSeekerIndex = jobPosting.applications.findIndex(
+//     (js) => js._id.toString() === jobSeekerId,
+//   );
+
+//   if (jobSeekerIndex === -1) {
+//     throw new ApiError(404, "Job seeker not found in the job posting");
+//   }
+
+//   // Update the status of the job seeker in the applications array
+//   jobPosting.applications[jobSeekerIndex].status = status;
+
+//   // Save the updated job posting
+//   await jobPosting.save();
+
+//   // Respond with success message
+//   return res
+//     .status(200)
+//     .json(
+//       new ApiResponse(
+//         200,
+//         { jobSeekerId, status },
+//         "Job seeker status updated successfully",
+//       ),
+//     );
+// });
 const updateJobSeekerStatus = asyncHandler(async (req, res) => {
   const { jobPostingId, jobSeekerId } = req.params;
-  const { status } = req.body; // e.g., "Accepted", "Rejected"
-
-  // Find job posting
+  const { status } = req.body;
   const employer = await Employer.findOne({
     jobPostings: jobPostingId,
   }).populate({
@@ -283,31 +402,24 @@ const updateJobSeekerStatus = asyncHandler(async (req, res) => {
     match: { _id: jobPostingId },
     populate: { path: "applications", model: "JobSeeker" },
   });
-
   if (!employer) {
     throw new ApiError(404, "Job posting not found");
   }
-
   const jobPosting = employer.jobPostings[0];
   const jobSeekerIndex = jobPosting.applications.findIndex(
     (js) => js._id.toString() === jobSeekerId,
   );
-
   if (jobSeekerIndex === -1) {
-    throw new ApiError(404, "Job seeker not found in this job posting");
+    throw new ApiError(404, "Job seeker not found in the job posting");
   }
-
-  // Update status (you might want to add more logic here depending on your schema)
   jobPosting.applications[jobSeekerIndex].status = status;
-
   await jobPosting.save();
-
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        jobPosting,
+        { jobSeekerId, status },
         "Job seeker status updated successfully",
       ),
     );

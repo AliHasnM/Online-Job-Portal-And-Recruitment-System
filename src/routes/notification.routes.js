@@ -1,3 +1,5 @@
+// routes/notification.routes.js
+
 import { Router } from "express";
 import {
   getNotifications,
@@ -13,7 +15,7 @@ router.use(verifyEmployerJWT);
 // Create a notification for a specific employer
 router.route("/:employerId").post(createNotification);
 
-// Get notifications for a specific jobSeeker
+// Get notifications for a specific employer
 router.route("/:employerId").get(getNotifications);
 
 export default router;

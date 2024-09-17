@@ -24,6 +24,7 @@ router
   .post(upload.single("companyProfile"), registerEmployer);
 
 router.route("/login").post(loginEmployer);
+// router.route("/refresh-token").post(refreshAccessToken);
 router.route("/refresh-token").post(refreshAccessToken);
 router.route("/change-password").post(verifyEmployerJWT, changeCurrentPassword);
 
